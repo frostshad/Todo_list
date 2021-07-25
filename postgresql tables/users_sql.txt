@@ -1,0 +1,17 @@
+CREATE TABLE public.users
+(
+    user_id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+    login character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    passh character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    salt character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    first_name character varying(25) COLLATE pg_catalog."default" NOT NULL,
+    middle_name character varying(25) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(25) COLLATE pg_catalog."default" NOT NULL,
+    supervisor_id integer,
+    CONSTRAINT users_pkey PRIMARY KEY (user_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.users
+    OWNER to postgres;

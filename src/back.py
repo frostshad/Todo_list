@@ -1,4 +1,3 @@
-from psycopg2 import OperationalError
 import psycopg2
 import flask
 import json
@@ -9,7 +8,7 @@ from _datetime import datetime
 app = flask.Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-connection = psycopg2.connect(user='postgres', password='', host='127.0.0.1', port='5433',
+connection = psycopg2.connect(user='postgres', password='password', host='127.0.0.1', port='5433',
                               database='TODO')
 
 
@@ -70,12 +69,10 @@ def create_task(title, description, task_end, priority, creator_id, responsible)
 # Мои задачи
 def select_todo_list(id):
     cursor = connection.cursor()
-    cursor.execute('SELECT json_agg(tasks) FROM tasks WHERE responsible =' +str(id))
+    cursor.execute('SELECT json_agg(tasks_view) FROM tasks_view WHERE responsible =' +str(id))
     record = cursor.fetchall()
     return record[0][0]
 
-s = select_todo_list(36)
-print(s)
 
 # Задачи подчиненных
 def select_sub_todo_list(id):
@@ -109,9 +106,11 @@ def root():  # Проверка логина/пароля
 @app.route('/todo_list', methods=['GET'])
 @cross_origin()
 def todo_list():
+
     print(select_todo_list(36))
     return resp(200, select_todo_list(36))
 
 
 if __name__ == '__main__':
     app.run()
+

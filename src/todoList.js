@@ -50,26 +50,3 @@ export default class Todo_list extends React.Component {
     }
 }
 
-/* { items.map(item =>(
-                <tr key={item.task_id}>
-                    <td>{item.title}</td>
-                    <td>{item.description}</td>
-                    <td>{item.task_start}</td>
-                    <td>{item.task_end}</td>
-                    <td>{item.updated}</td>
-                </tr>
-            ))}*/
- /*   render() {
-        return (
-
-            <form onSubmit={this.handleSubmit}>
-            <div> Name </div>
-            <input type='Submit' value='List'/>
-            </form>
-
-
-        );
-
-    }
-}
-*/

@@ -4,10 +4,6 @@ import LoginForm from './loginform'
 import Todo_list from './todoList'
 import UserContext from './context'
 
-/*function removeForm(id) {
-  setTodos
-}
-*/
 
 function App() {
   let isLogged = useContext(UserContext)

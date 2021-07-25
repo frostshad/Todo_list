@@ -1,0 +1,16 @@
+CREATE OR REPLACE VIEW public.tasks_view
+ AS
+ SELECT tasks.task_id,
+    tasks.title,
+    tasks.description,
+    tasks.task_start,
+    tasks.task_end,
+    tasks.priority,
+    tasks.status AS creator_id,
+    tasks.responsible,
+    concat(users.first_name, ' ', users.middle_name, ' ', users.last_name) AS resp_name
+   FROM tasks
+     JOIN users ON tasks.responsible = users.user_id;
+
+ALTER TABLE public.tasks_view
+    OWNER TO postgres;

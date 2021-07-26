@@ -8,7 +8,7 @@ from _datetime import datetime
 app = flask.Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-connection = psycopg2.connect(user='postgres', password='password', host='127.0.0.1', port='5433',
+connection = psycopg2.connect(user='postgres', password='123qwert', host='127.0.0.1', port='5433',
                               database='TODO')
 
 
@@ -67,7 +67,7 @@ def create_task(title, description, task_end, priority, creator_id, responsible)
 
 
 # Мои задачи
-def select_todo_list(id):
+def select_todo_list(id = 36):
     cursor = connection.cursor()
     cursor.execute('SELECT json_agg(tasks_view) FROM tasks_view WHERE responsible =' +str(id))
     record = cursor.fetchall()
@@ -85,7 +85,7 @@ def select_sub_todo_list(id):
 # Проверка логина/пароля
 @app.route('/user', methods=['POST'])
 @cross_origin()
-def root():  # Проверка логина/пароля
+def root():
     login = flask.request.json['login']
     password = flask.request.json['password']
     cursor = connection.cursor()
@@ -106,11 +106,8 @@ def root():  # Проверка логина/пароля
 @app.route('/todo_list', methods=['GET'])
 @cross_origin()
 def todo_list():
-
-    print(select_todo_list(36))
-    return resp(200, select_todo_list(36))
+    return resp(200, select_todo_list())
 
 
 if __name__ == '__main__':
     app.run()
-

@@ -1,7 +1,6 @@
 import React, {useContext} from 'react'
 import axios from 'axios'
-import todoList from "./todoList";
-
+import Todo_list from "./todoList";
 
 
 export default class LoginForm extends React.Component {
@@ -35,14 +34,12 @@ export default class LoginForm extends React.Component {
             else {alert('Пользователя не существует')}}
       })
 
+
       event.preventDefault();
       }
 
 
-
-
   render() {
-
       let page = null
       if (this.state.isLogged === false) {
           page =
@@ -57,18 +54,13 @@ export default class LoginForm extends React.Component {
                   <input type="submit" value="Войти" />
               </label>
           </form>
-      } else {page = <div>Done</div>}
+      } else {page = <div> <Todo_list /></div>}
 
 
       return (
 
-          <div> {page} </div>
-
-
+          <div> {page}  </div>
 
       );
   }
 }
-
-
-

@@ -1,7 +1,4 @@
-import React from "react";
-import table from "./table"
-
-
+import React, {useContext} from "react";
 
 
 export default class Todo_list extends React.Component {
@@ -17,10 +14,10 @@ export default class Todo_list extends React.Component {
 
 
     async componentWillMount() {
-        const response = await fetch('http://127.0.0.1:5000/todo_list',{body: this.state.login})
+        const response = await fetch('http://127.0.0.1:5000/todo_list?login='+this.state.login)
+        console.log(this.state.login)
         const data = await response.json()
         this.setState({isLoading: false, data})
-        console.log(this.state.data)
     }
 
 
@@ -29,23 +26,26 @@ export default class Todo_list extends React.Component {
         let page = null
         console.log(items)
         if (this.state.isLoading === false) {
-          page = <table>
+
+            page =
+                <table>
               { items.map(item =>(
+                  <tbody>
                 <tr key={item.task_id}>
                     <td>{item.title}</td>
-                    <td>{item.description}</td>
-                    <td>{item.task_start}</td>
+                    <td>{item.priority}</td>
                     <td>{item.task_end}</td>
-                    <td>{item.updated}</td>
+                    <td>{item.resp_name}</td>
+                    <td>{item.status}</td>
                 </tr>
-              ))}</table>
+                 </tbody>
+              ))}
+
+                    </table>
       } else {page = <div>loading</div>}
 
-
         return (
-            <div>
-                {page}
-            </div>
+            <div>{page}</div>
         );
     }
 }

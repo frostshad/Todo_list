@@ -1,3 +1,4 @@
+from psycopg2 import OperationalError
 import psycopg2
 import flask
 import json
@@ -8,7 +9,7 @@ from _datetime import datetime
 app = flask.Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-connection = psycopg2.connect(user='postgres', password='123qwert', host='127.0.0.1', port='5433',
+connection = psycopg2.connect(user='postgres', password='Luckerwp908', host='127.0.0.1', port='5433',
                               database='TODO')
 
 
@@ -27,6 +28,7 @@ def new_user(login, password, first_name, middle_name, last_name, supervisor_id)
                    ' VALUES (%s,%s,%s,%s,%s,%s,%s)',
                    (login, s_password, salt, first_name, middle_name, last_name, supervisor_id))
     connection.commit()
+    return (200)
 
 
 def to_json(data):
@@ -55,31 +57,84 @@ def select(login, password=0):
 
 
 # Новая задача
-def create_task(title, description, task_end, priority, creator_id, responsible):
-    t = datetime.now().strftime('%Y-%m-%d')
-    print(t)
+def new_task(title, description, task_end, priority, creator_id, responsible):
     status = 'К выполнению'
     cursor = connection.cursor()
-    cursor.execute('INSERT INTO tasks (title, description, task_start, task_end, updated, priority, status, creator_id, responsible) '
+    cursor.execute(
+        'INSERT INTO tasks (title, description, task_start, task_end, updated, priority, status, creator_id, responsible) '
         'VALUES (%s, %s, CURRENT_DATE, %s, CURRENT_DATE, %s, %s , %s, %s)', (title, description, task_end,
                                                                              priority, status, creator_id, responsible))
     connection.commit()
 
 
-# Мои задачи
-def select_todo_list(id = 36):
+# Обновить статус задачи
+def update_task_status(task_id, status):
     cursor = connection.cursor()
-    cursor.execute('SELECT json_agg(tasks_view) FROM tasks_view WHERE responsible =' +str(id))
+    cursor.execute('UPDATE tasks SET status = ' + '\'' + status + '\'' + ', updated = CURRENT_DATE' +
+                   ' WHERE task_id =' + str(task_id))
+    connection.commit()
+
+
+# Обновить задачу
+def update_task(task_id, title, description, task_end, priority, status, responsible):
+    cursor = connection.cursor()
+    cursor.execute('UPDATE tasks SET title = ' + '\'' + title + '\'' +' , description = ' + '\'' + description + '\'' +', task_end = ' + '\'' + task_end + '\'' +
+                   ', updated = CURRENT_DATE, ' + ' priority = ' + '\'' + priority + '\'' + ', status = ' + '\'' + status + '\'' + ', responsible = ' + '\'' + str(responsible) + '\'' +
+                   ' WHERE task_id =' + str(task_id))
+    connection.commit()
+
+
+# ID пользователя
+def select_user_id(login):
+    cursor = connection.cursor()
+    cursor.execute('SELECT user_id FROM users WHERE login =' + '\'' + login + '\'')
+    record = cursor.fetchone()
+    return record[0]
+
+
+# ID подчиненных
+def select_sub_user_id(id):
+    cursor = connection.cursor()
+    cursor.execute("SELECT user_id, concat(users.first_name, ' ', users.middle_name, ' ', users.last_name) AS resp_name FROM users WHERE supervisor_id =" + str(id))
+    record = cursor.fetchall()
+    d = []
+    for i in range(len(record)):
+        d.append({'id': record[i][0], 'name': record[i][1]})
+    print(d)
+    return d
+
+
+# Мои задачи
+def select_todo_list(user_id, date):
+    cursor = connection.cursor()
+    if date == 'Now':
+        cursor.execute('SELECT json_agg(view_tasks) FROM view_tasks WHERE responsible =' + str(user_id) + 'AND task_end <= CURRENT_DATE ')
+    elif date == 'Week':
+        cursor.execute('SELECT json_agg(view_tasks) FROM view_tasks WHERE responsible =' + str(user_id) + 'AND task_end <= CURRENT_DATE+6')
+    elif date == 'mWeek':
+        cursor.execute('SELECT json_agg(view_tasks) FROM view_tasks WHERE responsible =' + str(user_id) + 'AND task_end > CURRENT_DATE+6')
+    else:
+        cursor.execute('SELECT json_agg(view_tasks) FROM view_tasks WHERE responsible =' + str(user_id))
+
     record = cursor.fetchall()
     return record[0][0]
 
 
 # Задачи подчиненных
-def select_sub_todo_list(id):
+def select_sub_todo_list(user_id):
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM tasks WHERE creator_id =' + str(id))
+    cursor.execute('SELECT json_agg(view_tasks) FROM view_tasks WHERE creator_id =' + str(user_id))
     record = cursor.fetchall()
-    return record
+    return record[0][0]
+
+
+# Выбор ID подчиненных
+@app.route('/select_resp', methods=['GET'])
+@cross_origin()
+def select_resp():
+    login = flask.request.args.get('login')
+    user_id = select_user_id(login)
+    return resp(200, select_sub_user_id(user_id))
 
 
 # Проверка логина/пароля
@@ -103,10 +158,67 @@ def root():
     return resp(200, 2)
 
 
+# TODO
 @app.route('/todo_list', methods=['GET'])
 @cross_origin()
 def todo_list():
-    return resp(200, select_todo_list())
+    date = flask.request.args.get('date')
+    login = flask.request.args.get('login')
+    user_id = select_user_id(login)
+    return resp(200, select_todo_list(user_id, date))
+
+
+# TODO подчиненных
+@app.route('/sub_todo_list', methods=['GET'])
+@cross_origin()
+def sub_todo_list():
+    login = flask.request.args.get('login')
+    user_id = select_user_id(login)
+    return resp(200, select_sub_todo_list(user_id))
+
+
+# Создание задачи
+@app.route('/create_task', methods=['POST'])
+@cross_origin()
+def create_task():
+    title = flask.request.json['title']
+    description = flask.request.json['description']
+    task_end = flask.request.json['task_end']
+    priority = flask.request.json['priority']
+    responsible = flask.request.json['responsible']
+    creator = flask.request.json['creator']
+    creator_id = select_user_id(creator)
+    print(title, description, task_end, priority, creator_id, responsible)
+    new_task(title, description, task_end, priority, creator_id, responsible)
+    return resp(200,1)
+
+
+# Обновление статуса задачи
+@app.route('/update_task_status', methods=['POST'])
+@cross_origin()
+def task_status():
+    task_id = flask.request.json['task_id']
+    status = flask.request.json['status']
+    print(str(task_id)+' '+status)
+    update_task_status(task_id,status)
+    return resp(200,1)
+
+
+# Изменение задачи
+@app.route('/update_task', methods=['POST'])
+@cross_origin()
+def task_update():
+    task_id = flask.request.json['task_id']
+    title = flask.request.json['title']
+    description = flask.request.json['description']
+    task_end = flask.request.json['task_end']
+    priority = flask.request.json['priority']
+    responsible = flask.request.json['responsible']
+    status = flask.request.json['status']
+    print(title)
+    update_task(task_id, title, description, task_end, priority, status, responsible)
+    return resp(200,1)
+
 
 
 if __name__ == '__main__':

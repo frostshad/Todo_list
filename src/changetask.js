@@ -29,7 +29,6 @@ export default function ChangeTask(data) {
   const handleClickOpen = () => {
     setOpen(true);
   };
- 
   const handleClose = () => {
     setOpen(false);
 
@@ -83,10 +82,10 @@ export default function ChangeTask(data) {
         Изменить задачу
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Подробности задачи</DialogTitle>
+        <DialogTitle id="form-dialog-title">Задача {data.data.title}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Изменение данных задачи
+            Описание
           </DialogContentText>
           <TextField
             disabled={true}
@@ -164,10 +163,10 @@ export default function ChangeTask(data) {
         Изменить задачу
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Создание новой задачи</DialogTitle>
+        <DialogTitle id="form-dialog-title">Задача {data.data.title}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Подробнее
+            Описание
           </DialogContentText>
           <TextField
             defaultValue={data.data.title}

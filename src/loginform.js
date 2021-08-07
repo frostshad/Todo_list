@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import axios from 'axios'
 import Todo_list from "./todoList";
 
@@ -33,8 +33,6 @@ export default class LoginForm extends React.Component {
             if (res.data === 1) {alert('Неверный пароль')}
             else {alert('Пользователя не существует')}}
       })
-
-
       event.preventDefault();
       }
 
@@ -54,13 +52,17 @@ export default class LoginForm extends React.Component {
                   <input type="submit" value="Войти" />
               </label>
           </form>
-      } else {page = <div> <Todo_list /></div>}
+      } else { page =  <div> <Todo_list login={this.state.login}/></div> }
 
 
       return (
 
-          <div> {page}  </div>
+           <div> {page} </div>
 
       );
   }
 }
+
+
+
+

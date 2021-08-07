@@ -43,7 +43,6 @@ export default function ChangeTask(data) {
        let priority = document.getElementById('priority').innerText
        let responsible = document.getElementById('responsible').offsetParent.children[1].value
        let status = document.getElementById('status').innerText
-       console.log(responsible)
        axios.post('http://127.0.0.1:5000/update_task', {task_id: task_id, title: title,description: description,task_end: task_end,
            priority: priority, responsible: responsible, status: status})
        handleClose()
@@ -52,7 +51,6 @@ export default function ChangeTask(data) {
     function updateTaskStatus() {
        let task_id = data.data.task_id
        let status = document.getElementById('status').innerText
-       console.log(status, task_id)
        axios.post('http://127.0.0.1:5000/update_task_status',{task_id: task_id, status: status})
        handleClose()
     }

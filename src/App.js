@@ -2,17 +2,20 @@ import './App.css';
 import React, {useContext} from 'react'
 import LoginForm from './loginform'
 import Todo_list from './todoList'
-import UserContext from './context'
+import {LoggedContext} from './context'
+
+
 
 
 function App() {
-  let isLogged = useContext(UserContext)
+  let isLogged = useContext(LoggedContext)
+
   return (
-      <UserContext.Provider>
-        {console.log(isLogged.isLogged)}
-        {isLogged.isLogged === 'true' ? <Todo_list/> :   <LoginForm/>}
-      </UserContext.Provider>
+        <LoggedContext.Provider value={LoggedContext}>
+        {isLogged.isLogged === 'true' ? <Todo_list />  :   <LoginForm />}
+        </LoggedContext.Provider>
   );
 }
 
 export default App;
+

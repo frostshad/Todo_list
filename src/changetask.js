@@ -29,7 +29,7 @@ export default function ChangeTask(data) {
   const handleClickOpen = () => {
     setOpen(true);
   };
-    console.log(data.tablename,data.data.task_id)
+ 
   const handleClose = () => {
     setOpen(false);
 

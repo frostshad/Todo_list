@@ -99,7 +99,6 @@ export default function FormDialog(data) {
               id="priority"
               value={priority}
               onChange={priorityChange}
-              renderValue={'High'}
             >
               <MenuItem value={'High'}>Высокий</MenuItem>
               <MenuItem value={'Medium'}>Средний</MenuItem>

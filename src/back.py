@@ -9,7 +9,7 @@ from _datetime import datetime
 app = flask.Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-connection = psycopg2.connect(user='postgres', password='Luckerwp908', host='127.0.0.1', port='5433',
+connection = psycopg2.connect(user='postgres', password='', host='127.0.0.1', port='5433',
                               database='TODO')
 
 
